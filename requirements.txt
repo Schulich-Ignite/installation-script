@@ -1,0 +1,4 @@
+sdu         # Various utilities
+pystall     # A simple api for binary installation
+pyinstaller # Used to distribute single-file binaries
+pyshortcuts # Used to generate system shortcuts
