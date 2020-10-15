@@ -1,4 +1,4 @@
-sdu         # Various utilities
-pystall     # A simple api for binary installation
+tqdm
+requests
 pyinstaller # Used to distribute single-file binaries
-pyshortcuts # Used to generate system shortcuts
+if os.name == 'nt': winshell # used to setup shortcuts
