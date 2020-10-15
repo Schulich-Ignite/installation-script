@@ -1,3 +1,5 @@
+**CURRENTLY WIP**
+
 # Ignite Installer
 
 This is the installer script for setting up a local version of the ignite Jupyter-lab stack. Most people will just want to install via the [releases](https://github.com/Schulich-Ignite/installation-script/releases). 
