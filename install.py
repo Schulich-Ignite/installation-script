@@ -1,12 +1,14 @@
-import os
-import logging
-import subprocess
-from shutil import copyfile
-from sys import platform, argv
 
+# Standard Library Dependencies
+import os                       # Used for path validation
+import logging                  # Used for optional logging details
+import subprocess               # Used to invoke installer binaries
+from shutil import copyfile     # Used to copy files between directories
+from sys import platform, argv  # Used to validate which os script is on, and how many arguments at terminal
 
-import requests
-from tqdm import tqdm
+# Third-Party Dependencies
+import requests                 # Used to download files
+from tqdm import tqdm           # Used to generate progress bar on donwloads
 
 
 # Setting up Constants
@@ -29,8 +31,8 @@ else:
     PIP_EXECUTABLE = "python3.8 -m pip"
 
 
-
 def _download(name, url, extension):
+    """Downloads binaries from remote sources"""
     logging.info(f"Downloading {name}")
     file_path = f"{DOWNLOAD_FOLDER}{os.sep}{name}{extension}"
 
@@ -57,7 +59,8 @@ def _download(name, url, extension):
     progress_bar.close()
 
 def _install(path, args):
-    logging.debug([path, *args])
+    """Install executable files with provided args"""
+    logging.debug("Installing: " + str([path, *args]))
     installer = subprocess.call([path, *args], shell=True)
     while installer.poll:
         ... # Wait for installer to finish
@@ -65,9 +68,9 @@ def _install(path, args):
 
 
 def step_1():
+    """install python 3.8.6"""
     if windows:
         _download("python-installer", "https://www.python.org/ftp/python/3.8.6/python-3.8.6-amd64.exe", ".exe") 
-        return
         _install(f"{DOWNLOAD_FOLDER}{os.sep}python-installer.exe", ["/quiet", "InstallAllUsers=1", "PrependPath=1", "Include_test=0"])
         print("2")
     elif linux:
@@ -76,9 +79,9 @@ def step_1():
         ...
 
 def step_2():
+    """Install NodeJS"""
     if windows:
         _download("node", "https://nodejs.org/dist/v12.19.0/node-v12.19.0-x64.msi", ".msi")
-        return
         _install(f"{DOWNLOAD_FOLDER}{os.sep}msiexec.exe", ["/i", "node.msi", r'INSTALLDIR="C:\Program Files\NodeJS"', "/quiet", "/promptrestart"])
     elif linux:
         ...
@@ -94,30 +97,34 @@ def step_3_to_6():
         subprocess.call([JUPYTER_EXECUTABLE, "labextension", "install", f"@jupyter-widgets/{jupyter_package}"], shell=True)
 
 def step_7():
+    """Install the spark package for use in jupyterlab"""
     os.chdir("spark")
     subprocess.call([PIP_EXECUTABLE, "install", "."], shell=True)
     os.chdir("..")
 
 def step_8_to_9():
+    """Create a folder in the documents folder called ignite_notebooks with a default notebook called ignite.ipynb"""
     os.mkdir(f"{DOCUMENTS_FOLDER}{os.sep}ignite_notebooks")
     copyfile("ignite.ipynb",f"{DOCUMENTS_FOLDER}{os.sep}ignite_notebooks{os.sep}ignite.ipynb")
 
 def step_10():
+    """Adds an ignite icon to the desktop for easy launching"""
     copyfile(f".{os.sep}ignite.ico",f"{DOCUMENTS_FOLDER}{os.sep}ignite_notebooks{os.sep}ignite.ico")
     if windows:
-        import winshell
-        from win32com.client import Dispatch
-        desktop = winshell.desktop()
-        path = os.path.join(desktop, "Ignite.lnk")
-        target = JUPYTER_LAB_EXECUTABLE
-        wDir = f"{DOCUMENTS_FOLDER}\\ignite_notebooks"
-        icon = f"{DOCUMENTS_FOLDER}{os.sep}ignite_notebooks{os.sep}ignite.ico"
-        shell = Dispatch('WScript.Shell')
-        shortcut = shell.CreateShortCut(path)
+        import winshell  # Allows execution of built-in windows shell functions
+        from win32com.client import Dispatch  # Instantiate COM objects to dispatch through
+        desktop = winshell.desktop()  # Get desktop path
+        path = os.path.join(desktop, "Ignite.lnk")  # Setup path for shortcut
+        target = JUPYTER_LAB_EXECUTABLE  # Setup path for target executable
+        wDir = f"{DOCUMENTS_FOLDER}\\ignite_notebooks"  # Set directory to run executeable from
+        icon = f"{DOCUMENTS_FOLDER}{os.sep}ignite_notebooks{os.sep}ignite.ico"  # Set icon path
+        shell = Dispatch('WScript.Shell')  # Grab the WScript shell function to build shortcuts
+        shortcut = shell.CreateShortCut(path)  # Begin creating shortcut objects
+        # Add previously built variables to shortcut object
         shortcut.Targetpath = target
         shortcut.WorkingDirectory = wDir
         shortcut.IconLocation = icon
-        shortcut.save()
+        shortcut.save() # Flush shortcut to the desktop
 
 if __name__ == "__main__":
     if len(argv) > 1: # if an argument is passed then go into debug logging
