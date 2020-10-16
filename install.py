@@ -60,10 +60,9 @@ def _download(name, url, extension):
 
 def _install(path, args):
     """Install executable files with provided args"""
+    print(f"Installing {path}")
     logging.debug("Installing: " + str([path, *args]))
     installer = subprocess.call([path, *args], shell=True)
-    while installer.poll:
-        ... # Wait for installer to finish
     os.remove(path)
 
 
@@ -72,7 +71,6 @@ def step_1():
     if windows:
         _download("python-installer", "https://www.python.org/ftp/python/3.8.6/python-3.8.6-amd64.exe", ".exe") 
         _install(f"{DOWNLOAD_FOLDER}{os.sep}python-installer.exe", ["/quiet", "InstallAllUsers=1", "PrependPath=1", "Include_test=0"])
-        print("2")
     elif linux:
         ...
     elif mac:
