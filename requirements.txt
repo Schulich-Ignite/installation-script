@@ -1,4 +1,5 @@
 tqdm
 requests
 pyinstaller # Used to distribute single-file binaries
-if os.name == 'nt': winshell # used to setup shortcuts
+winshell    # used to setup shortcuts
+pywin32
