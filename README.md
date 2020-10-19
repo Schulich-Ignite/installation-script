@@ -34,4 +34,5 @@ Below are the details for creating/updating binary distributions available in [r
 
 ### Windows
 
-Run ```pyinstaller --onefile --add-data "ignite.ico;ignite.ico" --add-data "ignite.ipynb;ignite.ipynb" --uac-admin -i ignite.ico --add-data "spark;spark" install.py```
+1. Run ```pyinstaller install_win.spec```
+2. Binary is available at ```dist/install.exe```
